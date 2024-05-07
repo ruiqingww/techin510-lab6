@@ -1,6 +1,6 @@
 # MusicGen for Running
 
-A real-time running music prompt generator that can take the user’s request and give a professional music description for later music generation. Users can directly download the response's text file.
+A real-time running music generator that can take the user’s request and give a professional music clip in 2 minutes. Users can directly download the music description text file and the music mp3 file.
 
 ## Getting Started
 
@@ -27,13 +27,19 @@ source venv/bin/activate
 streamlit run llm_app.py
 ```
 
+### Music Generation using Meta API
+It will take 2 minutes to generate a 30-second music clip. please wait.
+
+![wait](wait.png)
+
+Final result:
+![music](music.png)
+
 
 ## Lessons Learned
-How to create a streamlit app using Gemini API.
+Updated my prompt template using learned techniques
 
-By creating an input prompt template, send all the information to the API, and download the response with one click.
+Added Meta MusicGen API (using replicate) so that the web app can direct generated music based on the generated prompt, and display the music
 
 ## Future Improvements
-Add a music API to the web to generate music directly.
-
 Receive real-time data from AWS and input them into the template instead of manually choosing the cadence and heart rate.

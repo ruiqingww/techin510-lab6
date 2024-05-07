@@ -2,6 +2,9 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 import streamlit as st
+import replicate
+import requests
+
 
 load_dotenv()
 
@@ -41,6 +44,8 @@ with col4:
 # Text area for running goals
 goals = st.text_area("Enter your running goals:")
 
+audio_file = None
+
 # Button to generate music description
 if st.button("Give me a Tempo!"):
     # Formatting the prompt with the selected options and the running goals
@@ -49,3 +54,34 @@ if st.button("Give me a Tempo!"):
     st.write(reply)
 
     st.download_button(label="Download Music Prompt", data=reply, file_name="Music_Prompt.txt", mime="text/plain")
+
+    with st.spinner("Generating music might take up to 2 minutes. Please wait..."):
+            output_url = replicate.run(
+                "meta/musicgen:671ac645ce5e552cc63a54a2bbff63fcf798043055d2dac5fc9e36a837eedcfb",
+                input={
+                    "top_k": 250,
+                    "top_p": 0,
+                    "prompt": reply,
+                    "duration": 30,
+                    "temperature": 1,
+                    "continuation": False,
+                    "model_version": "stereo-large",
+                    "output_format": "mp3",
+                    "continuation_start": 0,
+                    "multi_band_diffusion": False,
+                    "normalization_strategy": "peak",
+                    "classifier_free_guidance": 3
+                }
+            )
+
+    audio_file_path = "generated_music.mp3"
+    response = requests.get(output_url, stream=True)
+    if response.status_code == 200:
+        with open(audio_file_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=1024):
+                f.write(chunk)
+
+        audio_file = audio_file_path
+
+if audio_file:
+    st.audio(audio_file, format="audio/mp3")
